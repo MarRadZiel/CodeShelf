@@ -4,7 +4,7 @@ They can be used to generate compact, unique identifiers by encoding multiple sm
 
 ## Sample
 This sample demonstrates how to use [PackedBits32](PackedBits32.cs) class to pack and unpack multiple values into a single 32-bit integer.<br/>
-Full sample code is available in [Program.cs](Program.cs)
+Full sample code is available in [Sample.cs](Sample.cs)
 
 ### Sample code
 This code fragment shows how packing and unpacking affects the value of [PackedBits32](PackedBits32.cs) instance.<br/>
