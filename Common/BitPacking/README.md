@@ -44,7 +44,7 @@ packed32.Reset();
 Console.WriteLine($" {packed32.ToString(asBits: true)} ({packed32})\t BitPointer:{packed32.BitPointer} BitsLeft:{packed32.BitsLeft}");
 ```
 
-### Sample Output
+#### Sample Output
 
 <pre>Original values: a=255 b=1 c=False d=True
  00000000000000000000000000000000 (0)    BitPointer:0 BitsLeft:32

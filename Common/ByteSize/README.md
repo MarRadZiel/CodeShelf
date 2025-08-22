@@ -4,7 +4,7 @@
 ## 🚀 Quick Start
 This section demonstrates how to create and display `ByteSize` instances.  
 The first one is created by implicitly casting a `long` value to `ByteSize`. The value is treated as a total number of bytes. Constants `MB2B` and `KB2B` are used to convert megabytes and kilobytes to bytes. 
-These are predefined constants in `ByteSize` representing the number of bytes in a megabyte/kilobyte.
+These are predefined constants in `ByteSize` representing the number of bytes in a megabyte/kilobyte.  
 The second one is created using the constructor that accepts total number of bytes.
 
 ```csharp
