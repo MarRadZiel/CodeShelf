@@ -3,5 +3,7 @@
 Examples:
 - 📅 [PolishWorkCalendar](Common/PolishWorkCalendar) — a tool for handling workdays and holidays in Poland
 - 🧮 [BitPacking](Common/BitPacking) — helper methods for packing and unpacking bits
+- 📏 [ByteSize](Common/ByteSize) — parse, format, and work with byte sizes in a human‑friendly way
+
   
 This repository will be gradually expanded with new code fragments that I find worth keeping and sharing.
