@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{3AEE83EA-1295-441F-B3FF-E0EED176DEDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitPacking", "Common\BitPacking\BitPacking.csproj", "{B2A378D3-2612-4D81-9F69-6A1962B34AEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitPacking", "BitPacking\BitPacking.csproj", "{B2A378D3-2612-4D81-9F69-6A1962B34AEE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PolishWorkCalendar", "Common\PolishWorkCalendar\PolishWorkCalendar.csproj", "{8F161C7E-D910-41F3-AA5C-F2DD214F60DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PolishWorkCalendar", "PolishWorkCalendar\PolishWorkCalendar.csproj", "{8F161C7E-D910-41F3-AA5C-F2DD214F60DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ByteSize", "Common\ByteSize\ByteSize.csproj", "{232E363A-48B4-413E-B362-67909A7BAB18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ByteSize", "ByteSize\ByteSize.csproj", "{232E363A-48B4-413E-B362-67909A7BAB18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

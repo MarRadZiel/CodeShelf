@@ -1,5 +1,5 @@
 ﻿# Auto Project Version
-[AutoProjectVersion](AutoProjectVersion.cs) automatically assigns your Unity project version based on the Git repository history.
+[AutoProjectVersion](Editor/AutoProjectVersion.cs) automatically assigns your Unity project version based on the Git repository history.
 
 ## 📌 Version Format
 The version format is:  
@@ -42,3 +42,7 @@ Initial commit
 - **Manual:**  
   - Set version: `Tools → Versioning → Set version`  
   - Export changelog: `Tools → Versioning → Export change log`
+
+---
+
+✅ Tested with Unity 6000.0 LTS

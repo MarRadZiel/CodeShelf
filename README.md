@@ -7,6 +7,7 @@ Common Examples:
 
 Unity Game Engine Examples:
 - 📌 [AutoProjectVersion](Unity/CodeShelf/Assets/Snippets/AutoProjectVersion) — Unity editor tool that auto-generates project version numbers from Git history and exports changelogs
+- 🎞️ [Easing](Unity/CodeShelf/Assets/Snippets/Easing) — C#/Unity implementation of animation easing functions with live graph and demo scene
 
   
 This repository will be gradually expanded with new code fragments that I find worth keeping and sharing.
