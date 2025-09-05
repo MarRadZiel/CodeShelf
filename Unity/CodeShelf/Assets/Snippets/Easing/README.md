@@ -43,7 +43,10 @@ For more examples, see the [`EasingTest`](Sample/EasingTest.cs).`OnProgressChang
 ## 🎮 Sample Scene
 Usage and visualization of easing functions are demonstrated in the [`EasingSample.unity`](Sample/EasingSample.unity) scene and the accompanying [`EasingTest.cs`](Sample/EasingTest.cs) script - particularly in the `OnProgressChanged()` method.
 
-![Screenshot of a sample.](Sample/screenshot.png)
+Test it in your browser with [`LiveDemo`](https://marradziel.itch.io/easing-demo).
+
+[![Screenshot of a sample.](Sample/screenshot.png)](https://marradziel.itch.io/easing-demo)
+
 The sample showcases:
 - 📈 A graph of the selected easing function with current `x(t)` value
 - 🎨 Easing applied to image color and transparency
