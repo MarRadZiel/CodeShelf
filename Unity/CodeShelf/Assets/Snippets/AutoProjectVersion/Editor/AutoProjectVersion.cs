@@ -6,15 +6,45 @@ using UnityEngine;
 
 public class AutoProjectVersion : IPreprocessBuildWithReport
 {
+    private const string defaultSettingsAssetPath = "Assets/Settings/AutoProjectVersionSettings.asset";
+    private static AutoProjectVersionSettings _settings;
+
+    static AutoProjectVersion()
+    {
+        LoadSettingsIfNeeded();
+    }
+
+    [InitializeOnLoadMethod]
+    public static void OnProjectLoaded()
+    {
+        LoadSettingsIfNeeded();
+        if (_settings.SetVersionOnProjectLoad)
+        {
+            SetVersion();
+        }
+    }
     public int callbackOrder => 0;
     public void OnPreprocessBuild(BuildReport report)
     {
-        SetVersion();
+        LoadSettingsIfNeeded();
+        if (_settings.SetVersionBeforeBuild)
+        {
+            SetVersion();
+        }
     }
 
-    [MenuItem("Tools/Versioning/Set version")]
-    private static void SetVersion()
+    [MenuItem("Tools/Versioning/Settings")]
+    private static void GoToSettings()
     {
+        LoadSettingsIfNeeded();
+
+        Selection.activeObject = _settings;
+    }
+    [MenuItem("Tools/Versioning/Set version")]
+    public static void SetVersion()
+    {
+        LoadSettingsIfNeeded();
+
         GetCurrentVersion(out int major, out int minor, out int patch, out int build, out _);
 
         var version = $"{major}.{minor}.{patch}.{build}";
@@ -25,30 +55,43 @@ public class AutoProjectVersion : IPreprocessBuildWithReport
             AssetDatabase.SaveAssets();
         }
     }
-    [MenuItem("Tools/Versioning/Export change log")]
-    private static void ExportChangeLog()
+    [MenuItem("Tools/Versioning/Export changelog")]
+    public static void ExportChangelog()
     {
-        StringBuilder changeLog = new StringBuilder();
+        LoadSettingsIfNeeded();
+
+        StringBuilder changelog = new StringBuilder();
 
         GetCurrentVersion(out int major, out int minor, out int patch, out int build, out string lastVersionCommit);
 
         var version = $"{major}.{minor}.{patch}.{build}";
-        changeLog.AppendLine($"v{version}");
-        if (lastVersionCommit != null)
+        changelog.AppendLine($"v{version}");
+        StringBuilder gitCommand = new StringBuilder("log");
+        if (_settings.ChangelogSorting == AutoProjectVersionSettings.ChangelogSortType.OldestFirst)
         {
-            changeLog.AppendLine(ExecuteGitCommand($"log --reverse --pretty=format:\"%s\" {lastVersionCommit}..HEAD"));
+            gitCommand.Append(" --reverse");
+        }
+        gitCommand.Append(" --pretty=format:");
+        if (_settings.IncludeDatesInChangelogEntries)
+        {
+            gitCommand.Append("\"%ad %s\" --date=short");
         }
         else
         {
-            changeLog.AppendLine(ExecuteGitCommand($"log --reverse --pretty=format:\"%s\""));
+            gitCommand.Append("\"%s\"");
         }
+        if (lastVersionCommit != null)
+        {
+            gitCommand.Append($" {lastVersionCommit}..HEAD");
+        }
+        changelog.AppendLine(ExecuteGitCommand(gitCommand.ToString()));
 
-        var path = EditorUtility.SaveFilePanel("Save change log", "", "changelog.txt", "txt");
+        var path = EditorUtility.SaveFilePanel("Save changelog", "", "changelog.txt", "txt");
         if (!string.IsNullOrEmpty(path))
         {
             try
             {
-                System.IO.File.WriteAllText(path, changeLog.ToString());
+                System.IO.File.WriteAllText(path, changelog.ToString());
             }
             catch (System.Exception e)
             {
@@ -56,6 +99,35 @@ public class AutoProjectVersion : IPreprocessBuildWithReport
             }
         }
     }
+
+    private static void LoadSettingsIfNeeded()
+    {
+        if (_settings == false)
+        {
+            string[] assetGUIDs = AssetDatabase.FindAssets($"t:{nameof(AutoProjectVersionSettings)}");
+            if (assetGUIDs != null && assetGUIDs.Length > 0)
+            {
+                _settings = AssetDatabase.LoadAssetAtPath<AutoProjectVersionSettings>(AssetDatabase.GUIDToAssetPath(assetGUIDs[0]));
+            }
+            else
+            {
+                _settings = AssetDatabase.LoadAssetAtPath(defaultSettingsAssetPath, typeof(AutoProjectVersionSettings)) as AutoProjectVersionSettings;
+                if (_settings == false)
+                {
+                    _settings = ScriptableObject.CreateInstance<AutoProjectVersionSettings>();
+                    if (!AssetDatabase.IsValidFolder("Assets/Settings")) AssetDatabase.CreateFolder("Assets", "Settings");
+                    AssetDatabase.CreateAsset(_settings, AssetDatabase.GenerateUniqueAssetPath(defaultSettingsAssetPath));
+                    AssetDatabase.SaveAssets();
+                    Selection.activeObject = _settings;
+                }
+            }
+            if (_settings == false)
+            {
+                Debug.LogError($"{nameof(AutoProjectVersionSettings)} asset couldn't be loaded or created.");
+            }
+        }
+    }
+
     private static void GetCurrentVersion(out int major, out int minor, out int patch, out int build, out string lastVersionCommit)
     {
         major = minor = patch = build = 0;
