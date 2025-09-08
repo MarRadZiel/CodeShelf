@@ -1,3 +1,4 @@
+﻿using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,16 +8,16 @@ public class MarkdownInspector : CustomFileInspector
 {
     public override bool OverrideInspectorGUI => true;
 
-    [SerializeField]
     private bool renderedPreview = true;
-
     private TextAsset mdTextAsset;
     private string text;
 
+    // Formatting settings
     private readonly int[] headerSizes = new int[] { 22, 18, 16, 14, 12, 10 };
     private readonly Color codeColor = Color.yellow;
     private readonly Color blockColor = Color.cyan;
     private readonly Color preColor = Color.magenta;
+    private readonly Color blockQuoteColor = Color.grey;
 
     public MarkdownInspector(CustomFileInspectorContext context) : base(context) { }
 
@@ -24,181 +25,68 @@ public class MarkdownInspector : CustomFileInspector
     {
         mdTextAsset = context.target as TextAsset;
         text = mdTextAsset.text;
-        ParseHeaders();
-        ParseFormattingTags();
-        ParseBlocks();
-        ParseLinks();
+        text = text.Replace("\r\n", "\n");
+
+        Parse();
         AdjustWhiteSpaces();
 
-        void ParseHeaders()
+        void Parse()
         {
-            text = text.Replace("######", "<h6>").Replace("#####", "<h5>").Replace("####", "<h4>").Replace("###", "<h3>").Replace("##", "<h2>").Replace("#", "<h1>");
-
-            for (int i = 0; i < headerSizes.Length; ++i)
-            {
-                string headerTag = $"<h{i + 1}>";
-                int headerStart = text.IndexOf(headerTag);
-                do
-                {
-                    if (headerStart >= 0)
-                    {
-                        int headerEnd = text.IndexOf('\n', headerStart);
-                        text = text[..headerStart] + $"\n\n<b><size={headerSizes[i]}>{text[(headerStart + 4)..headerEnd].Trim()}</size></b>" + text[headerEnd..];
-                        headerStart = text.IndexOf(headerTag, headerEnd + 1);
-                    }
-                }
-                while (headerStart >= 0);
-            }
-
-        }
-        void ParseFormattingTags()
-        {
-            string tag = "***";
-            int startTag = text.IndexOf(tag);
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int endTag = text.IndexOf(tag, startTag + 3);
-
-                    text = text[..startTag] + $"<b><i>{text[(startTag + 3)..endTag].Trim()}</i></b>" + text[(endTag + 3)..];
-
-                    startTag = text.IndexOf(tag, endTag + 3);
-                }
-            }
-            while (startTag >= 0);
-
-            tag = "**";
-            startTag = text.IndexOf(tag);
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int endTag = text.IndexOf(tag, startTag + tag.Length);
-
-                    text = text[..startTag] + $"<b>{text[(startTag + tag.Length)..endTag].Trim()}</b>" + text[(endTag + tag.Length)..];
-
-                    startTag = text.IndexOf(tag, endTag + tag.Length);
-                }
-            }
-            while (startTag >= 0);
-
-            tag = "__";
-            startTag = text.IndexOf(tag);
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int endTag = text.IndexOf(tag, startTag + tag.Length);
-
-                    text = text[..startTag] + $"<b>{text[(startTag + tag.Length)..endTag].Trim()}</b>" + text[(endTag + tag.Length)..];
-
-                    startTag = text.IndexOf(tag, endTag + tag.Length);
-                }
-            }
-            while (startTag >= 0);
-
-            tag = "*";
-            startTag = text.IndexOf(tag);
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int endTag = text.IndexOf(tag, startTag + tag.Length);
-
-                    text = text[..startTag] + $"<i>{text[(startTag + tag.Length)..endTag].Trim()}</i>" + text[(endTag + tag.Length)..];
-
-                    startTag = text.IndexOf(tag, endTag + tag.Length);
-                }
-            }
-            while (startTag >= 0);
-
-            tag = "_";
-            startTag = text.IndexOf(tag);
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int endTag = text.IndexOf(tag, startTag + tag.Length);
-
-                    text = text[..startTag] + $"<i>{text[(startTag + tag.Length)..endTag].Trim()}</i>" + text[(endTag + tag.Length)..];
-
-                    startTag = text.IndexOf(tag, endTag + tag.Length);
-                }
-            }
-            while (startTag >= 0);
-
-            text = text.Replace("<ins>", "<u>").Replace("</ins>", "</u>");
-        }
-        void ParseLinks()
-        {
-            string tag = "[";
-            int startTag = text.IndexOf(tag);
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int titleEndTag = text.IndexOf(']', startTag + tag.Length);
-                    if (titleEndTag > 0)
-                    {
-                        if (titleEndTag + 1 < text.Length && text[titleEndTag + 1] == '(')
-                        {
-                            int endTag = text.IndexOf(")", startTag + tag.Length);
-                            text = text[..startTag] + $"<u>{text[(startTag + tag.Length)..titleEndTag].Trim()}</u>" + text[(endTag + tag.Length)..];
-                            startTag = text.IndexOf(tag, endTag + tag.Length);
-                        }
-                        else
-                        {
-                            startTag = text.IndexOf(tag, titleEndTag);
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-            while (startTag >= 0);
-        }
-        void ParseBlocks()
-        {
-            string tag = "```";
-            int startTag = text.IndexOf(tag);
+            string blockQuoteColorString = $"#{ColorUtility.ToHtmlStringRGB(blockQuoteColor)}";
             string codeColorString = $"#{ColorUtility.ToHtmlStringRGB(codeColor)}";
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int endStartTag = text.IndexOf("\n", startTag + tag.Length);
-                    int endTag = text.IndexOf(tag, endStartTag + tag.Length);
-
-                    text = text[..startTag] + $"<br><color={codeColorString}>{text[endStartTag..endTag].Trim()}</color><br>" + text[(endTag + tag.Length)..];
-
-                    startTag = text.IndexOf(tag, endTag + tag.Length);
-                }
-            }
-            while (startTag >= 0);
-
-            tag = "`";
-            startTag = text.IndexOf(tag);
             string blockColorString = $"#{ColorUtility.ToHtmlStringRGB(blockColor)}";
-            do
-            {
-                if (startTag >= 0)
-                {
-                    int endTag = text.IndexOf(tag, startTag + tag.Length);
-                    text = text[..startTag] + $"<color={blockColorString}>{text[(startTag + tag.Length)..endTag].Trim()}</color>" + text[(endTag + tag.Length)..];
+            string preColorString = $"#{ColorUtility.ToHtmlStringRGB(preColor)}";
 
-                    startTag = text.IndexOf(tag, endTag + tag.Length);
-                }
+            // Parse # headers
+            for (int i = 6; i >= 1; i--)
+            {
+                string replacement = $"\n\n<b><size={headerSizes[i - 1]}>$1</size></b>";
+                text = Regex.Replace(text, $"^{new string('#', i)} (.+)$", replacement, RegexOptions.Multiline);
             }
-            while (startTag >= 0);
-            text = text.Replace("<pre>", $"<color=#{ColorUtility.ToHtmlStringRGB(preColor)}>").Replace("</pre>", "</color>");
+
+            // Bold + Italic  *** ***
+            text = Regex.Replace(text, @"\*\*\*(.+?)\*\*\*", "<b><i>$1</i></b>");
+
+            // Bold ** ** and __ __
+            text = Regex.Replace(text, @"\*\*(.+?)\*\*", "<b>$1</b>");
+            text = Regex.Replace(text, @"__(.+?)__", "<b>$1</b>");
+
+            // Italic * * and _ _
+            text = Regex.Replace(text, @"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", "<i>$1</i>");
+            text = Regex.Replace(text, @"(?<!_)_(?!_)(.+?)(?<!_)_(?!_)", "<i>$1</i>");
+
+            // Underline with '<ins>' tag
+            text = text.Replace("<ins>", "<u>").Replace("</ins>", "</u>");
+
+            // Horizontal line '---'
+            text = Regex.Replace(text, @"^(-{3,}|\*{3,})$", "────────────", RegexOptions.Multiline);
+
+            // Block quote '>'
+            text = Regex.Replace(text, @"^> (.*?)$", $"<color={blockQuoteColorString}>| $1</color>", RegexOptions.Multiline);
+
+            // Multiline code blocks ``` ```
+            text = Regex.Replace(text, @"```(?:\w*\n)?([\s\S]*?)```\n", $"<br><color={codeColorString}>$1</color><br>");
+
+            // Inline code ` `
+            text = Regex.Replace(text, @"`(.+?)`", $"<color={blockColorString}>$1</color>");
+
+            // '<pre>' tags
+            text = text.Replace("<pre>", $"<color={preColorString}>").Replace("</pre>", "</color>");
+
+            // Links '[text](url)'
+            text = Regex.Replace(text, @"\[(.+?)\]\((.+?)\)", "<u>$1</u>");
+
+            // Lists
+            text = Regex.Replace(text, @"^\s*[-*] (.*?)$", "• $1", RegexOptions.Multiline);
+
+            // Handle supported HTML tags
+            text = Regex.Replace(text, @"<em>(.*?)</em>", "<i>$1</i>", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, @"<strong>(.*?)</strong>", "<b>$1</b>", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, @"<br\s*/?>", "\n", RegexOptions.IgnoreCase);
         }
         void AdjustWhiteSpaces()
         {
             text = text.Trim();
-            text = text.Replace("\r\n", "\n");
             do
             {
                 int textLength = text.Length;

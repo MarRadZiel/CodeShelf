@@ -8,6 +8,6 @@ Common Examples:
 Unity Game Engine Examples:
 - 📌 [AutoProjectVersion](Unity/CodeShelf/Assets/Snippets/AutoProjectVersion) — Unity editor tool that auto-generates project version numbers from Git history and exports changelogs
 - 🎞️ [Easing](Unity/CodeShelf/Assets/Snippets/Easing) — C#/Unity implementation of animation easing functions with live graph and demo scene
-
+- 🗂️ [CustomFileInspector](Unity/CodeShelf/Assets/Snippets/CustomFileInspector) — Unity editor extension for rendering custom inspectors for text and default assets, targeting specific file types like .md, .csv, or folders
   
 This repository will be gradually expanded with new code fragments that I find worth keeping and sharing.

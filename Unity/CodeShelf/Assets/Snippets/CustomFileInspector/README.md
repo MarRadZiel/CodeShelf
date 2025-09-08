@@ -43,7 +43,7 @@ public class LogInspector : CustomFileInspector
 
 ## 🧪 Examples
 - 📄 [MarkdownInspector.cs](Editor/Sample/MarkdownInspector.cs)  
-Renders .md files with a simplified styled preview.  
+Renders `.md` files with a simplified styled preview. [Sample](Editor/Sample/sampleMarkdown.md) `.md` file is included.   
 - 📁 [DirectoryInspector.cs](Editor/Sample/DirectoryInspector.cs)  
 Handles folders as `DefaultAsset` and displays their full path and provides button to open them in the explorer.
 
@@ -57,10 +57,8 @@ Handles folders as `DefaultAsset` and displays their full path and provides butt
 You can create inspectors for any file type Unity recognizes as `DefaultAsset` or `TextAsset`. Just inherit from `CustomFileInspector`, implement your GUI logic, and register with the `CustomFileInspectorAttribute`.
 
 ## ⚠️ Notes
-- If multiple inspectors are registered for the same extension, Unity will log an error.
-- Inspectors are stateful — each instance holds its own context.
 - Only one inspector per extension is supported.
-
+- If multiple inspectors are registered for the same extension, Unity will log an error.
 
 ---
 
